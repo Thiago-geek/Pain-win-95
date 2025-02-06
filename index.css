@@ -1,0 +1,52 @@
+/* aplica estilos a todos los elememtos de la pagina incluidos los pseudoelementos ::after ::before*/
+*, *::before, *::after { 
+    box-sizing: border-box;
+    /* width: 200px;
+    padding-right: 100px; */
+}
+
+body {
+     font-family: 'Arial', sans-serif; /* arial es la fuente que ha tenido windows y si no es compatible utilizara */
+     background-color: #222; /*color de fondo de la pagina*/
+     padding: 16px; /*separacion de 16px*/
+     max-width: 500px; /*un ancho maxico de 500px*/
+     margin: 0 auto; /*centramos todo*/
+}
+
+h1 {
+    color: #fce300;
+    font-size: 12px;
+    font-weight: 600;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+
+    img {
+        width: 16px;
+        height: auto;
+    }
+}
+
+canvas {
+    background-color: #fff; /* fondo del canvas*/
+}
+
+header {
+    background-color: silver;
+    padding: 2px;
+
+    button {
+        border: 0;
+        background-color: transparent;
+
+        &:hover {
+            box-shadow: 
+              1px 1px black,/*sombrado*/
+              inset -1px -1px gray, /*sobra interna*/
+              inset 1px 1px white /*le da como un efecto 3D*/
+            ;
+        }
+    }
+}
