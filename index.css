@@ -50,3 +50,16 @@ header {
         }
     }
 }
+
+main {
+    padding: 16px;
+}
+
+footer {
+    background: silver;
+    padding: 4px;
+}
+
+#container {
+    border: 1px solid #808080;
+}
