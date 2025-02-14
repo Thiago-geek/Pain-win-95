@@ -13,6 +13,9 @@ const $$ = selector => document.querySelectorAll(selector);
 
 
 const $canvas = $('#canvas'); // indica que la variable almacena un elemento del DOM.
+const $colorPicker = $('#color-picker');
+const $clearBtn = $('#clear-btn');
+
 
 const ctx = $canvas.getContext('2d');
 
@@ -24,11 +27,14 @@ let lastY = 0;
 let mode = MODES.DRAW;
 
 // EVENTS
-$canvas.addEventListener('mousedown', startDrawing);
-$canvas.addEventListener('mousemove', draw);
-$canvas.addEventListener('mouseup', stopDrawing);
-$canvas.addEventListener('mouseleave', stopDrawing);
+$canvas.addEventListener('mousedown', startDrawing); // se dispara cuando el usuario presiona un botón del mouse sobre un elemento. 
+$canvas.addEventListener('mousemove', draw); // Se dispara cuando el mouse se mueve dentro del canvas.
+$canvas.addEventListener('mouseup', stopDrawing); // Se dispara cuando el usuario suelta el botón del mouse
+$canvas.addEventListener('mouseleave', stopDrawing); // Se dispara cuando el cursor sale del área del canvas.
 
+
+$colorPicker.addEventListener('change', handleChangeColor);
+$clearBtn.addEventListener('click', clearCanvas)
 
 // METHODS
 function startDrawing(event) {
@@ -66,4 +72,13 @@ function draw(event) {
 function stopDrawing(event) {
     isDrawing = false; // cuando dejemos de clikear y cuando salgamos del camba para de dibujar
 };
+
+function handleChangeColor (){
+  const { value } = $colorPicker; // recuperamos el valor del color.
+  ctx.strokeStyle = value
+}
+
+function clearCanvas (){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
  
