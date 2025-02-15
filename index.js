@@ -39,12 +39,12 @@ $canvas.addEventListener('mousemove', draw); // Se dispara cuando el mouse se mu
 $canvas.addEventListener('mouseup', stopDrawing); // Se dispara cuando el usuario suelta el botón del mouse
 $canvas.addEventListener('mouseleave', stopDrawing); // Se dispara cuando el cursor sale del área del canvas.
 
-
 $colorPicker.addEventListener('change', handleChangeColor);
 $clearBtn.addEventListener('click', clearCanvas);
 $rectangleBtn.addEventListener('click', () => {setMode(MODES.RECTANGLE);});
 $drawBtn.addEventListener('click', () => {setMode(MODES.DRAW);});
 $eraseBtn.addEventListener('click', () => {setMode(MODES.ERASE);});
+$pickerBtn.addEventListener('click', () => {setMode(MODES.PICKER)});
 
 // METHODS
 function startDrawing(event) {
@@ -94,14 +94,6 @@ function draw(event) {
         ctx.stroke();
         return
     }
-
-    if (mode === MODES.ERASE) {
-        $eraseBtn.classList.add('active');
-        canvas.style.cursor = 'url("images/erase.png") 0 24, auto';
-        return;
-    }
-    
-
 };
 
 function stopDrawing(event) {
@@ -117,7 +109,8 @@ function clearCanvas (){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function setMode(newMode) {
+async function setMode(newMode) {
+    let previousMode = mode
     mode = newMode;
 
     $('button.active')?.classList.remove('active');
@@ -135,18 +128,36 @@ function setMode(newMode) {
         canvas.style.cursor = 'nw-resize';
         ctx.globalCompositeOperation = 'source-over';
         ctx.lineWidth = 2;
-     
-
-        return
-    } if (mode === MODES.ERASE) {
+         return
+    } 
+    
+    if (mode === MODES.ERASE) {
         $eraseBtn.classList.add('active');
+        canvas.style.cursor = 'url("images/erase.png") 0 24, auto';
         ctx.globalCompositeOperation = 'destination-out';
-        ctx.lineWidth = 20;
+        ctx.lineWidth = 30;
         return
-    } if (mode === MODES.ELLIPSE) {
-        $ellipseBtn.classList.add('active');
+    } 
+    
+    if (mode === MODES.PICKER) {
+        $pickerBtn.classList.add('active');
+        const eyeDropper = new window.EyeDropper();
+
+        try {
+            const result = await eyeDropper.open();
+            const { sRGBHex } = result;
+            ctx.strokeStyle = sRGBHex;
+            $colorPicker.value = sRGBHex;
+            setMode(previousMode)
+            
+        } catch (e) {
+            // errores
+        }
         return
-    } if (mode === MODES.RECTANGLE) {
+    } 
+    
+    
+    if (mode === MODES.RECTANGLE) {
         $rectangleBtn.classList.add('active');
         return
     }
@@ -155,5 +166,7 @@ function setMode(newMode) {
 // init
 setMode(MODES.DRAW);
  
-
+if (typeof window.EyeDropper !== 'undefined') {
+    $pickerBtn.removeAttribute('disabled');
+}
 
