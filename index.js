@@ -27,6 +27,7 @@ const ctx = $canvas.getContext('2d');
 
 // STATE
 let isDrawing = false;
+let isShiftPressed = false;
 let startX, startY
 let lastX = 0;
 let lastY = 0;
@@ -41,6 +42,11 @@ $canvas.addEventListener('mouseleave', stopDrawing); // Se dispara cuando el cur
 
 $colorPicker.addEventListener('change', handleChangeColor);
 $clearBtn.addEventListener('click', clearCanvas);
+
+document.addEventListener('keydown', handleKeyDown);
+document.addEventListener('keyup', handleKeyUp);
+
+
 $rectangleBtn.addEventListener('click', () => {setMode(MODES.RECTANGLE);});
 $drawBtn.addEventListener('click', () => {setMode(MODES.DRAW);});
 $eraseBtn.addEventListener('click', () => {setMode(MODES.ERASE);});
@@ -86,8 +92,19 @@ function draw(event) {
 
     if(mode === MODES.RECTANGLE){
         ctx.putImageData(imageData, 0, 0);
-        const width = offsetX - startX;
-        const height = offsetY - startY;
+        
+        let width = offsetX - startX;
+        let height = offsetY - startY;
+
+        if(isShiftPressed) {
+            const sideLength = Math.min(
+                Math.abs(width),
+                Math.abs(height)
+            )
+
+            width = width > 0 ? sideLength : -sideLength;
+            height = height > 0 ? sideLength : -sideLength;
+        }
     
         ctx.beginPath();
         ctx.rect(startX, startY, width, height);
@@ -162,6 +179,14 @@ async function setMode(newMode) {
         return
     }
 }
+
+function handleKeyDown({ key }) {
+   isShiftPressed = key === 'Shift';
+}
+
+function handleKeyUp({ key }) {
+    if(key === 'Shift') isShiftPressed = false;
+ }
 
 // init
 setMode(MODES.DRAW);
