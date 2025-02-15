@@ -31,6 +31,7 @@ let startX, startY
 let lastX = 0;
 let lastY = 0;
 let mode = MODES.DRAW;
+let imageData;
 
 // EVENTS
 $canvas.addEventListener('mousedown', startDrawing); // se dispara cuando el usuario presiona un botón del mouse sobre un elemento. 
@@ -41,14 +42,9 @@ $canvas.addEventListener('mouseleave', stopDrawing); // Se dispara cuando el cur
 
 $colorPicker.addEventListener('change', handleChangeColor);
 $clearBtn.addEventListener('click', clearCanvas);
-$rectangleBtn.addEventListener('click', () => {
-    setMode(MODES.RECTANGLE);
-});
-
-$drawBtn.addEventListener('click', () => {
-    setMode(MODES.DRAW);
-});
-
+$rectangleBtn.addEventListener('click', () => {setMode(MODES.RECTANGLE);});
+$drawBtn.addEventListener('click', () => {setMode(MODES.DRAW);});
+$eraseBtn.addEventListener('click', () => {setMode(MODES.ERASE);});
 
 // METHODS
 function startDrawing(event) {
@@ -60,6 +56,8 @@ function startDrawing(event) {
     ;[startX, startY] = [offsetX, offsetY]
     ;[lastX, lastY] = [offsetX, offsetY]
 
+    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  
     console.log({ startX, startY, lastX, lastY});
 }
 
@@ -68,7 +66,7 @@ function draw(event) {
 
     const {offsetX,offsetY} = event;
 
-    if(mode === MODES.DRAW) {
+    if(mode === MODES.DRAW || mode === MODES.ERASE) {
 
     // comenzar trazado
     ctx.beginPath();
@@ -87,6 +85,7 @@ function draw(event) {
     }
 
     if(mode === MODES.RECTANGLE){
+        ctx.putImageData(imageData, 0, 0);
         const width = offsetX - startX;
         const height = offsetY - startY;
     
@@ -96,9 +95,14 @@ function draw(event) {
         return
     }
 
+    if (mode === MODES.ERASE) {
+        $eraseBtn.classList.add('active');
+        canvas.style.cursor = 'url("images/erase.png") 0 24, auto';
+        return;
+    }
+    
+
 };
-
-
 
 function stopDrawing(event) {
     isDrawing = false; // cuando dejemos de clikear y cuando salgamos del camba para de dibujar
@@ -121,15 +125,23 @@ function setMode(newMode) {
     if(mode === MODES.DRAW) {
         $drawBtn.classList.add('active');
         canvas.style.cursor = 'crosshair';
+        ctx.globalCompositeOperation = 'source-over';
         ctx.lineWidth = 2;
+       
+
         return
     }  if (mode === MODES.RECTANGLE) {
         $rectangleBtn.classList.add('active');
         canvas.style.cursor = 'nw-resize';
+        ctx.globalCompositeOperation = 'source-over';
         ctx.lineWidth = 2;
+     
+
         return
     } if (mode === MODES.ERASE) {
         $eraseBtn.classList.add('active');
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 20;
         return
     } if (mode === MODES.ELLIPSE) {
         $ellipseBtn.classList.add('active');
@@ -139,6 +151,9 @@ function setMode(newMode) {
         return
     }
 }
+
+// init
+setMode(MODES.DRAW);
  
 
 
